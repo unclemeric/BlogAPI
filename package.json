@@ -1,0 +1,25 @@
+{
+  "name": "blogapi",
+  "version": "1.0.0",
+  "description": "provide api for blog project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unclemeric/BlogAPI.git"
+  },
+  "author": "unclemeric",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unclemeric/BlogAPI/issues"
+  },
+  "homepage": "https://github.com/unclemeric/BlogAPI#readme",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "serve-favicon": "^2.3.2"
+  }
+}
