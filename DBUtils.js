@@ -28,6 +28,15 @@ mongoose.connection.on('error', function(err) {
 mongoose.connection.on('disconnected', function() {
 	console.log('Mongoose connection disconnected');
 });
+var disconnect = function() {
+    db.disconnect(function(error) {
+        if (error) {
+            throw error;
+        }
+        console.log("close successful")
+    });
+}
+
 
 var mongooseSchema = new mongoose.Schema({
 	username: {
@@ -57,6 +66,15 @@ var doc = {
 	content: 'emtity_demo_content'
 };
 
+mongooseModel.find(function (err,model) {
+	if(err){
+		throw err;
+	}
+	model.forEach(function(m){
+		console.log(typeof m._id)
+	});
+	disconnect();
+});
 // new mongooseModel(doc).save(function (error) {
 //     if(error) {
 //         console.log(error);
@@ -66,14 +84,4 @@ var doc = {
 //     // 关闭数据库链接
 //     db.close();
 // })
-console.log(db)
-var disconnect = function() {
-	db.disconnect(function(error) {
-		if (error) {
-			throw error;
-		}
-		console.log("close successful")
-	});
-}
-
 disconnect();
