@@ -1,16 +1,30 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var favicon = require('serve-favicon');
+var svgCaptcha = require('svg-captcha');
 var roters = require('./routers');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+
 var app = express();
 
 var config = require('./config');
 
 app.disable('x-powered-by'); //X-Powered-By是网站响应头信息其中的一个，出于安全的考虑，一般会修改或删除掉这个信息。如果你用的node.js express框架，那么X-Powered-By就会显示Express
 app.use(favicon(config.SERVER.favicon));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
 	extended: false
+}));
+
+app.use(cookieParser());
+
+app.use(session({
+    secret: "appCat", //secret的值建议使用随机字符串
+    cookie: {maxAge: 60 * 1000 * 30}, // 过期时间（毫秒）
+    resave: false,
+    saveUninitialized: true,
 }));
 
 app.all('*', function(req, res, next) {
@@ -74,6 +88,30 @@ app.all('*', function(req, res, next) {
 	}
 });
 
+/**
+ * 验证码
+ * @param  {[type]} req  [description]
+ * @param  {[type]} res) {               var captcha [description]
+ * @return {[type]}      [description]
+ */
+app.get('/captcha', function (req, res) {
+    var captcha = svgCaptcha.createMathExpr(
+	    {
+		  size: 4, // 验证码长度
+		  ignoreChars: '0oO1iIl', // 验证码字符中排除 0o1i
+		  noise: 1, // 干扰线条的数量
+		  color: true, // 验证码的字符是否有颜色，默认没有，如果设定了背景，则默认有
+		  background: '#cc9966', // 验证码图片背景颜色
+		}
+	);
+    req.session.captcha = captcha.text;
+
+    res.set('Content-Type', 'image/svg+xml');
+    res.status(200).send(captcha.data);
+});
+app.get('/captchaVal', function (req, res) {
+    res.status(200).json({captcha:req.session.captcha});
+});
 
 app.use("/", roters);
 

@@ -24,7 +24,7 @@ router.get("/hello", function(req, res) {
 	 * @param  {[type]} res) 
 	 * @return {[type]}      [description]
 	 */
-router.post("/admin/article", function(req, res) {
+router.post("/admin/article", async function(req, res) {
 	var count = 0;
 	var page = req.body.page || 1;
 	var rows = req.body.rows || 10;
@@ -36,30 +36,43 @@ router.post("/admin/article", function(req, res) {
 	});
 	query.skip((page - 1) * rows);
 	query.limit(rows);
-	// if(stuname){
-	//     query.where('stuname',stuname);
-	// }
-	//计算分页数据
-	query.exec(function(err, rs) {
-		console.log(rs);
+	/**
+	 * User.find({}).sort('create_at').exec(callback)
+	 * User.find({}).sort('-create_at').exec(callback)
+	 * User.find({}).sort({ create_at: 'asc' }).exec(callback)
+	 * User.find({}).sort({ create_at: -1 }).exec(callback)
+	 * http://mongoosejs.com/docs/api.html#query_Query-sort
+	 * sort by "field" ascending and "test" descending
+	 * query.sort({ field: 'asc', test: -1 });
+		// equivalent
+		query.sort('field -test');
+	 */
+	query.sort({publishDate:-1});
+	var rows = await query.exec(function(err, rs) {	
 		if (err) {
+			console.log(error);
+			return [];
+		} else {
+			return rs;
+		}
+	});
+	ArticleModel.find({deleted: false},function(err, result) {
+		if(err){
+			console.log(error);
 			res.json({
 				result:0,
 				data:{},
-				message:err.message
+				message:""
 			});
-		} else {
-			//计算数据总数
-			ArticleModel.find({deleted: false},function(err, result) {
-				jsonArray = {
-					rows: rs,
-					total: result.length
-				};
-				res.json({
-					result:0,
-					data:jsonArray,
-					message:""
-				});
+		}else{
+			jsonArray = {
+				rows: rows,
+				total: result.length
+			};
+			res.json({
+				result:0,
+				data:jsonArray,
+				message:""
 			});
 		}
 	});
