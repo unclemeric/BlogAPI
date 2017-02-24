@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 var ArticleModel = require('./Models/Article');
 var Utils = require('./utils/common-utils');
-
 
 /**
  * test api
@@ -24,7 +25,7 @@ router.get("/hello", function(req, res) {
 	 * @param  {[type]} res) 
 	 * @return {[type]}      [description]
 	 */
-router.post("/admin/article", async function(req, res) {
+router.post("/admin/article", async(function(req, res) {
 	var count = 0;
 	var page = req.body.page || 1;
 	var rows = req.body.rows || 10;
@@ -48,14 +49,14 @@ router.post("/admin/article", async function(req, res) {
 		query.sort('field -test');
 	 */
 	query.sort({publishDate:-1});
-	var rows = await query.exec(function(err, rs) {	
+	var rows = await(query.exec(function(err, rs) {	
 		if (err) {
 			console.log(error);
 			return [];
 		} else {
 			return rs;
 		}
-	});
+	}));
 	ArticleModel.find({deleted: false},function(err, result) {
 		if(err){
 			console.log(error);
@@ -76,7 +77,7 @@ router.post("/admin/article", async function(req, res) {
 			});
 		}
 	});
-});
+}));
 /**
  * 新增文章
  * @param  {[type]} req  [description]

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --harmony ./app.js"
+    "start": "node ./app.js",
+    "dev":"nodemon ./app.js"
   },
   "repository": {
     "type": "git",
@@ -27,5 +28,8 @@
     "node-uuid": "^1.4.7",
     "serve-favicon": "^2.3.2",
     "svg-captcha": "^1.2.1"
+  },
+  "devDependencies": {
+    "asyncawait": "^1.0.6"
   }
 }
